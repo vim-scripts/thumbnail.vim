@@ -1,0 +1,542 @@
+*thumbnail.txt*	A thumbnail buffer selector for Vim
+
+Version: 0.1
+Author: itchyny (https://github.com/itchyny)
+License: MIT License
+Repository: https://github.com/itchyny/thumbnail.vim
+
+CONTENTS					*thumbnail-contents*
+
+Introduction				|thumbnail-introduction|
+Commands				|thumbnail-commands|
+Options					|thumbnail-options|
+Key Mappings				|thumbnail-key-mappings|
+Syntax					|thumbnail-syntax|
+Troubleshooting				|thumbnail-troubleshooting|
+Changelog				|thumbnail-changelog|
+
+==============================================================================
+INTRODUCTION					*thumbnail-introduction*
+
+The *thumbnail* plugin is a thumbnail-style buffer selector for Vim.
+
+The basic concept is graphical vim. We should not stay still at old-style
+stage. The user interface is largely influenced by the new tab of
+Google Chrome. This plugin is also inspired by Launchpad of Mac and unite.vim.
+
+------------------------------------------------------------------------------
+COMMANDS					*thumbnail-commands*
+
+:Thumbnail [{options}]
+						*:Thumbnail*
+		Open a new buffer and view the thumbnails of the buffers.
+
+------------------------------------------------------------------------------
+OPTIONS						*thumbnail-options*
+
+You can specify some options to modify the appearance of the thumbnail buffer.
+
+						*thumbnail-options-horizontal*
+		-horizontal
+		Open the thumbnail buffer in a horizontally opened buffer.
+
+						*thumbnail-options-vertical*
+		-vertical
+		Open the thumbnail buffer in a vertically opened buffer.
+
+						*thumbnail-options-below*
+		-below
+		Open the split window with below command prefix. This option
+		is effective with -horizontal and -vertical.
+
+						*thumbnail-options-here*
+		-here
+		Open the thumbnail buffer at the same window of the current
+		buffer.
+
+						*thumbnail-options-newtab*
+		-newtab
+		Open the thumbnail buffer in a new tab. When this option is
+		set, it opens a new tab even when the current buffer is a
+		unnamed buffer with no text.
+
+						*thumbnail-options-include*
+		-include={filetypes}
+		Include the buffers of specified filetypes, even if the
+		buffers are not buffer-listed. You can specify multiple
+		filetypes separated by commas.
+
+						*thumbnail-options-exclude*
+		-exclude={filetypes}
+		Exclude the buffers of specified filetypes, even if the
+		buffers are to be gathered into thumbnails in case with no
+		options. You can specify multiple filetypes separated by
+		commas.
+
+						*thumbnail-options-specify*
+		-specify={filetypes}
+		Only buffers of specified filetypes are gathered. You can
+		specify multiple filetypes separated by commas.
+
+------------------------------------------------------------------------------
+KEY MAPPINGS					*thumbnail-key-mappings*
+
+Normal mode key mappings.
+
+<Plug>(thumbnail_move_left)			*<Plug>(thumbnail_move_left)*
+<Plug>(thumbnail_move_right)			*<Plug>(thumbnail_move_right)*
+<Plug>(thumbnail_move_down)			*<Plug>(thumbnail_move_down)*
+<Plug>(thumbnail_move_up)			*<Plug>(thumbnail_move_up)*
+		Move the cursor by [count] thumbnails. These mappings stop
+		the selection each ends.
+
+<Plug>(thumbnail_move_next)			*<Plug>(thumbnail_move_next)*
+<Plug>(thumbnail_move_prev)			*<Plug>(thumbnail_move_prev)*
+		Move the cursor by [count] thumbnails. These mappings rotate
+		the selection.
+
+<Plug>(thumbnail_move_line_head)		*<Plug>(thumbnail_move_line_head)*
+<Plug>(thumbnail_move_line_middle)		*<Plug>(thumbnail_move_line_middle)*
+<Plug>(thumbnail_move_line_last)		*<Plug>(thumbnail_move_line_last)*
+		Go to the head/middle/last of the current line.
+
+<Plug>(thumbnail_move_head)			*<Plug>(thumbnail_move_head)*
+<Plug>(thumbnail_move_last)			*<Plug>(thumbnail_move_last)*
+		Go to the head/last of all the thumbnails.
+
+<Plug>(thumbnail_move_last_line_head)		*<Plug>(thumbnail_move_last_line_head)*
+		Go to the head of the last line.
+
+<Plug>(thumbnail_move_count_line_first)
+						*<Plug>(thumbnail_move_count_line_first)*
+<Plug>(thumbnail_move_count_line_last)
+						*<Plug>(thumbnail_move_count_line_last)*
+		Go to the head of the line [count], the first/last line in default.
+
+<Plug>(thumbnail_move_count_line_last_last)
+						*<Plug>(thumbnail_move_count_line_last_last)*
+		Go to the last of the line [count], the last line in default.
+
+<Plug>(thumbnail_move_column)			*<Plug>(thumbnail_move_column)*
+		Go to the column [count], the head in default, in the current
+		line.
+
+<Plug>(thumbnail_start_insert)			*<Plug>(thumbnail_start_insert)*
+		Start the filtering mode
+
+<Plug>(thumbnail_start_visual)			*<Plug>(thumbnail_start_visual)*
+<Plug>(thumbnail_start_line_visual)		*<Plug>(thumbnail_start_line_visual)*
+<Plug>(thumbnail_start_block_visual)		*<Plug>(thumbnail_start_block_visual)*
+<Plug>(thumbnail_exit_visual)			*<Plug>(thumbnail_exit_visual)*
+		Start/Exit the visual mode.
+
+<Plug>(thumbnail_start_delete)			*<Plug>(thumbnail_start_delete)*
+		Delete thumbnails with {motion}.
+
+<Plug>(thumbnail_delete)			*<Plug>(thumbnail_delete)*
+		Delete the selected buffer.
+
+<Plug>(thumbnail_delete_to_end)			*<Plug>(thumbnail_delete_to_end)*
+		Delete thumbnails till the end of the current line.
+
+<Plug>(thumbnail_delete_backspace)		*<Plug>(thumbnail_delete_backspace)*
+		Delete the thumbnail before the cursor.
+
+<Plug>(thumbnail_select)			*<Plug>(thumbnail_select)*
+		Open the selected buffer.
+
+<Plug>(thumbnail_redraw)			*<Plug>(thumbnail_redraw)*
+		Redraw the thumbnail buffer.
+
+<Plug>(thumbnail_toggle_help)			*<Plug>(thumbnail_toggle_help)*
+		Toggle the help menu of key mappings.
+
+<Plug>(thumbnail_exit)				*<Plug>(thumbnail_exit)*
+		Exit the thumbnail buffer.
+
+<Plug>(thumbnail_nop)				*<Plug>(thumbnail_nop)*
+		Nothing.
+
+Normal mode default mappings.
+{lhs}		{rhs}
+--------	---------------------------------------
+h		|<Plug>(thumbnail_move_left)|
+l		|<Plug>(thumbnail_move_right)|
+j		|<Plug>(thumbnail_move_down)|
+k		|<Plug>(thumbnail_move_up)|
+<Left>		|<Plug>(thumbnail_move_left)|
+<Right>		|<Plug>(thumbnail_move_right)|
+<Down>		|<Plug>(thumbnail_move_down)|
+<Up>		|<Plug>(thumbnail_move_up)|
+<BS>		same as h
+gh		same as h
+gl		same as l
+gj		same as j
+gk		same as k
+g<Left>		same as <Left>
+g<Right>	same as <Right>
+g<Down>		same as <Down>
+g<Up>		same as <Up>
+<S-Down>	same as <Down>
+<S-Up>		same as <Up>
++		same as j
+-		same as k
+w		|<Plug>(thumbnail_move_next)|
+W		same as w
+e		same as w
+E		same as w
+<TAB>		same as w
+<S-Right>	same as w
+<C-Right>	same as w
+b		|<Plug>(thumbnail_move_prev)|
+B		same as b
+ge		same as b
+gE		same as b
+<S-Tab>		same as b
+<S-Left>	same as b
+<C-Left>	same as b
+<C-n>		|<Plug>(thumbnail_move_down)|
+<C-p>		|<Plug>(thumbnail_move_up)|
+<C-f>		|<Plug>(thumbnail_move_next)|
+<C-b>		|<Plug>(thumbnail_move_prev)|
+0		|<Plug>(thumbnail_move_line_head)|
+^		same as 0
+g0		same as 0
+g-		same as 0
+<Home>		same as 0
+g<Home>		same as 0
+gm		|<Plug>(thumbnail_move_line_middle)|
+$		|<Plug>(thumbnail_move_line_last)|
+g$		same as $
+<End>		same as $
+g<End>		same as $
+gg		|<Plug>(thumbnail_move_count_line_first)|
+<C-Home>	same as gg
+G		|<Plug>(thumbnail_move_count_line_last)|
+|		|<Plug>(thumbnail_move_column)|
+i		|<Plug>(thumbnail_start_insert)|
+I		same as i
+a		same as i
+A		same as i
+/		|<Plug>(thumbnail_start_insert)|
+v		|<Plug>(thumbnail_start_visual)|
+V		|<Plug>(thumbnail_start_line_visual)|
+<C-v>		|<Plug>(thumbnail_start_block_visual)|
+<ESC>		|<Plug>(thumbnail_exit_visual)|
+d		|<Plug>(thumbnail_start_delete)|
+x		|<Plug>(thumbnail_delete)|
+<Del>		same as x
+D		|<Plug>(thumbnail_delete_to_end)|
+X		|<Plug>(thumbnail_delete_backspace)|
+<CR>		|<Plug>(thumbnail_select)|
+<SPACE>		same as <CR>
+<C-l>		|<Plug>(thumbnail_redraw)|
+?		|<Plug>(thumbnail_toggle_help)|
+q		|<Plug>(thumbnail_exit)|
+c		|<Plug>(thumbnail_nop)|
+C		|<Plug>(thumbnail_nop)|
+o		|<Plug>(thumbnail_nop)|
+O		|<Plug>(thumbnail_nop)|
+p		|<Plug>(thumbnail_nop)|
+P		|<Plug>(thumbnail_nop)|
+r		|<Plug>(thumbnail_nop)|
+R		|<Plug>(thumbnail_nop)|
+s		|<Plug>(thumbnail_nop)|
+S		|<Plug>(thumbnail_nop)|
+z		|<Plug>(thumbnail_nop)|
+
+Insert mode key mappings.
+
+<Plug>(thumbnail_move_left)			*i_<Plug>(thumbnail_move_left)*
+<Plug>(thumbnail_move_right)			*i_<Plug>(thumbnail_move_right)*
+<Plug>(thumbnail_move_down)			*i_<Plug>(thumbnail_move_down)*
+<Plug>(thumbnail_move_up)			*i_<Plug>(thumbnail_move_up)*
+		Move the thumbnail cursor. These mappings stop the selection each ends.
+
+<Plug>(thumbnail_move_next)			*i_<Plug>(thumbnail_move_next)*
+<Plug>(thumbnail_move_prev)			*i_<Plug>(thumbnail_move_prev)*
+		Move the thumbnail cursor. These mappings rotate the selection.
+
+<Plug>(thumbnail_move_cursor_left)		*i_<Plug>(thumbnail_move_cursor_left)*
+<Plug>(thumbnail_move_cursor_right)		*i_<Plug>(thumbnail_move_cursor_right)*
+		Move the input cursor.
+
+<Plug>(thumbnail_delete_backward_word)
+						*i_<Plug>(thumbnail_delete_backward_word)*
+<Plug>(thumbnail_delete_backward_char)
+						*i_<Plug>(thumbnail_delete_backward_char)*
+<Plug>(thumbnail_delete_backward_line)
+						*i_<Plug>(thumbnail_delete_backward_line)*
+		Delete one word/one char/the backward inputs.
+
+<Plug>(thumbnail_select)			*i_<Plug>(thumbnail_select)*
+		Open the selected buffer.
+
+<Plug>(thumbnail_exit_insert)			*i_<Plug>(thumbnail_exit_insert)*
+		Exit the filtering mode.
+
+<Plug>(thumbnail_nop)				*i_<Plug>(thumbnail_nop)*
+		Nothing.
+
+Insert mode default mappings.
+{lhs}		{rhs}
+--------	----------------------------------------
+<C-n>		|i_<Plug>(thumbnail_move_down)|
+<C-p>		|i_<Plug>(thumbnail_move_up)|
+<C-f>		|i_<Plug>(thumbnail_move_next)|
+<C-b>		|i_<Plug>(thumbnail_move_prev)|
+<Down>		|i_<Plug>(thumbnail_move_down)|
+<Up>		|i_<Plug>(thumbnail_move_up)|
+<Right>		|i_<Plug>(thumbnail_move_next)|
+<Left>		|i_<Plug>(thumbnail_move_prev)|
+<C-w>		|i_<Plug>(thumbnail_delete_backward_word)|
+<BS>		|i_<Plug>(thumbnail_delete_backward_char)|
+<C-h>		|i_<Plug>(thumbnail_delete_backward_char)|
+<C-u>		|i_<Plug>(thumbnail_delete_backward_line)|
+<CR>		|i_<Plug>(thumbnail_select)|
+<ESC>		|i_<Plug>(thumbnail_exit_insert)|
+
+------------------------------------------------------------------------------
+SYNTAX						*thumbnail-syntax*
+
+You can change the appearance of the thumbnails by changing the following
+syntax groups.
+
+ThumbnailMarker					*ThumbnailMarker*
+		Markers for unselected thumbnails.
+		Linked to Ignore, concealed in default.
+
+ThumbnailSelectMarker				*ThumbnailSelectMarker*
+		Markers for the thumbnail under the cursor.
+		Linked to Ignore, concealed in default.
+
+ThumbnailVisualMarker				*ThumbnailVisualMarker*
+		Markers for the visual-selected thumbnails, excluding the
+		thumbnail under the cursor.
+		Linked to Ignore, concealed in default.
+
+ThumbnailSelect					*ThumbnailSelect*
+		Syntax for the inner region for the thumbnail under the
+		cursor. The default value is the following.
+		term=none cterm=none ctermbg=236 gui=none guibg=#2c2c2c
+
+ThumbnailVisual					*ThumbnailVisual*
+		Syntax for the inner region for visual-selected thumbnails.
+		The default value is the following.
+		term=none cterm=none ctermbg=234 gui=none guibg=#1c1c1c
+
+------------------------------------------------------------------------------
+TROUBLESHOOTING					*thumbnail-troubleshooting*
+
+Problem 1:				|thumbnail-problem-1|
+	How to install this plugin.
+
+Problem 2:				|thumbnail-problem-2|
+	How to update this plugin.
+
+Problem 3:				|thumbnail-problem-3|
+	How to uninstall this plugin.
+
+Problem 4:				|thumbnail-problem-4|
+	How to change key-mapping settings for thumbnail buffers.
+
+Problem 5:				|thumbnail-problem-5|
+	Some thumbnails look weird.
+
+Problem 6:				|thumbnail-problem-6|
+	The cursor deviates from the mouse pointer.
+
+Problem 7:				|thumbnail-problem-7|
+	This plugin does not gather some buffers.
+
+Problem 8:				|thumbnail-problem-8|
+	This plugin deals with a text file as a binary file.
+	This plugin deals with a binary file as a text file, resulting in a
+	slowdown of redrawing.
+
+Problem 9:				|thumbnail-problem-9|
+	This plugin conflicts with another plugin (for example, with an
+	auto-completion plugin).
+
+Problem 10:				|thumbnail-problem-10|
+	Found a bug of this plugin.
+	Got many errors while using this plugin.
+	Vim hungs up while using this plugin.
+	Need a new mapping.
+	Want this plugin to be more configurable.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Problem 1:					*thumbnail-problem-1*
+	How to install this plugin.
+
+		If you are to install this plugin manually:
+
+			1. Put plugin/thumbnail.vim to $VIM/plugin/.
+			2. Put syntax/thumbnail.vim to $VIM/syntax/.
+			3. Put doc/thumbnail.txt to $VIM/doc/.
+
+		If you are to install this plugin using Vundle:
+
+			1. Add the following configuration to your
+			.vimrc(_vimrc).
+>
+			Bundle 'itchyny/thumbnail.vim'
+<
+			2. Install with `:BundleInstall`.
+
+		If you are to install this plugin using NeoBundle:
+
+			1. Add the following configuration to your
+			.vimrc(_vimrc).
+>
+			NeoBundle 'itchyny/thumbnail.vim'
+<
+			2. Install with `:NeoBundleInstall`.
+
+Problem 2:					*thumbnail-problem-2*
+	How to update this plugin.
+
+		If you have installed this plugin manually:
+
+			1. Access https://github.com/itchyny/thumbnail.vim .
+			2. Download the latest scripts.
+			3. Place the scripts as written in Problem 1.
+
+		If you have installed this plugin using Vundle:
+
+			1. Execute `:BundleInstall!`. Or try git pull in the
+			directory of this plugin.
+
+		If you have installed this plugin using NeoBundle:
+
+			1. Execute `:NeoBundleInstall!`. Or try git pull in
+			the directory of this plugin.
+
+Problem 3:					*thumbnail-problem-3*
+	How to uninstall this plugin.
+
+		If you have installed this plugin manually:
+
+			1. Remove all the `thumbnail.*`s under $VIM.
+
+		If you have installed this plugin using Vundle:
+
+			1. Remove the :Bundle 'itchynythumbnail.vim'
+			configuration from your .vimrc(_vimrc).
+			2. Update with `:BundleClean`.
+
+		If you have installed this plugin using NeoBundle:
+
+			1. Remove the :NeoBundle 'itchynythumbnail.vim'
+			configuration from your .vimrc(_vimrc).
+			2. Update with `:NeoBundleClean`.
+
+Problem 4:					*thumbnail-problem-4*
+	How to change key-mapping settings for thumbnail buffers.
+
+		Add the following configuration to you .vimrc(_vimrc).
+>
+		augroup ThumbnailKey
+			autocmd!
+			" Normal mode key mapping setting
+			autocmd FileType thumbnail nmap <buffer> {key}
+				\ <Plug>(thumbnail_...)
+			" Insert mode key mapping setting
+			autocmd FileType thumbnail imap <buffer> {key}
+				\ <Plug>(thumbnail_...)
+		augroup END
+<
+		For example, in order to exchange the keys for visual mode and
+		line-visual mode, use the following configuration.
+>
+		augroup ThumbnailKey
+			autocmd!
+			autocmd FileType thumbnail nmap <buffer> v
+				\ <Plug>(thumbnail_start_line_visual)
+			autocmd FileType thumbnail nmap <buffer> V
+				\ <Plug>(thumbnail_start_visual)
+		augroup END
+<
+		In the following configuration, you can use the keys <C-f> and
+		<C-b> to move the input cursor in filtering mode.
+>
+		augroup ThumbnailKey
+			autocmd!
+			autocmd FileType thumbnail imap <buffer> <C-f>
+				\ <Plug>(thumbnail_move_cursor_right)
+			autocmd FileType thumbnail imap <buffer> <C-b>
+				\ <Plug>(thumbnail_move_cursor_left)
+		augroup END
+<
+		For more key mappings, see the |thumbnail-key-mappings|
+		section.
+
+Problem 5:					*thumbnail-problem-5*
+	Some thumbnails look weird.
+
+		This plugin cannot correctly deal with a buffer which contains
+			+ text identical to markers: [|, [\, [^, ^], \], |]
+			+ some multibyte characters
+			+ some byte character sequences.
+		Let me know by opening an issue at the repository.
+
+Problem 6:					*thumbnail-problem-6*
+	The cursor deviates from the mouse pointer.
+
+		It is a bug in the conceal feature of Vim.
+
+Problem 7:					*thumbnail-problem-7*
+	This plugin does not gather some buffers.
+
+		This plugin gather buffers which is:
+			+ a new buffer and is modified
+			+ |buflisted|.
+		In order to include a buffer which is not |buflisted|, use the
+		`-include={filetypes}` option. For example, use the following
+		command to include a buffer filetype of which is |help|.
+>
+			:Thumbnail -include=help
+<
+		See |thumbnail-options-include| for further details.
+
+Problem 8:					*thumbnail-problem-8*
+	This plugin deal with a text file as a binary file.
+	This plugin deal with a binary file as a text file, resulting in a
+	slowdown of redrawing.
+
+		That is a bug of this plugin.
+		Let me know by opening an issue at the repository.
+
+Problem 9:					*thumbnail-problem-9*
+	This plugin conflicts with another plugin (for example, with an
+	auto-completion plugin).
+
+		1. Update your plugins.
+		2. Open an issue as in Problem 10.
+
+Problem 10:					*thumbnail-problem-10*
+	Found a bug of this plugin.
+	Got many errors while using this plugin.
+	Vim hungs up while using this plugin.
+	Need a new mapping.
+	Want this plugin to be more configurable.
+
+		Report/Request the issue/feature at
+		https://github.com/itchyny/thumbnail.vim/issues .
+
+==============================================================================
+CHANGELOG					*thumbnail-changelog*
+
+0.1	2013-05-25, ... , 06-08
+	- Filtering mode
+	- Options (filetype include/exclude/specify)
+	- Help menu for key mappings
+	- Troubleshooting section in the document
+	- Improve visual mode
+
+0.0	2013-03-19, ... , 03-24
+	- Initial commit and implementation
+
+==============================================================================
+vim:tw=78:sw=4:ts=8:ft=help:norl:noet:
