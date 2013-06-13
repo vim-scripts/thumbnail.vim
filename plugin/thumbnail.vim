@@ -1,9 +1,9 @@
 " =============================================================================
 " Filename: plugin/thumbnail.vim
-" Version: 0.1
+" Version: 0.2
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/06/08 14:07:41.
+" Last Change: 2013/06/13 16:50:42.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -67,7 +67,7 @@ function! s:new(args)
       let command = 'vnew'
       let isnewbuffer = 1
     elseif arg == '-here' && !&modified
-      let command = 'new | wincmd p | quit'
+      let command = 'new | wincmd p | quit | wincmd p'
     elseif arg == '-newtab'
       let command = 'tabnew'
       let isnewbuffer = 1
@@ -537,7 +537,7 @@ let s:nmapping_order =
 function! s:compare(a, b)
   return len(a:a) == 1 ? -1 : len(a:b) == 1 ? 1 :
         \ len(a:a) == len(a:b) ? (a:a =~ '^[a-z]\+$' ? -1 : 1) :
-        \ a:a !~# '\S-' ? -1 : a:b !=# '\S-' ? 1 : len(a:a) > len(a:b) ? 1 : -1
+        \ a:a !~# '\S-' ? -1 : a:b !~# '\S-' ? 1 : len(a:a) > len(a:b) ? 1 : -1
 endfunction
 function! s:help(b, s)
   redir => redir
