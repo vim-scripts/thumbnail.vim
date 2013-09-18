@@ -1,10 +1,10 @@
 *thumbnail.txt*	A thumbnail buffer selector for Vim
 
-Version: 0.3
+Version: 0.4
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/thumbnail.vim
-Last Change: 2013/07/21 20:19:39.
+Last Change: 2013/08/27 15:12:37.
 
 CONTENTS					*thumbnail-contents*
 
@@ -113,14 +113,14 @@ Normal mode key mappings.
 						*<Plug>(thumbnail_move_count_line_first)*
 <Plug>(thumbnail_move_count_line_last)
 						*<Plug>(thumbnail_move_count_line_last)*
-		Go to the head of the line [count], the first/last line in default.
+		Go to the head of the line [count], the first/last line by default.
 
 <Plug>(thumbnail_move_count_line_last_last)
 						*<Plug>(thumbnail_move_count_line_last_last)*
-		Go to the last of the line [count], the last line in default.
+		Go to the last of the line [count], the last line by default.
 
 <Plug>(thumbnail_move_column)			*<Plug>(thumbnail_move_column)*
-		Go to the column [count], the head in default, in the current
+		Go to the column [count], the head by default, in the current
 		line.
 
 <Plug>(thumbnail_start_insert)			*<Plug>(thumbnail_start_insert)*
@@ -307,16 +307,16 @@ syntax groups.
 
 ThumbnailMarker					*ThumbnailMarker*
 		Markers for unselected thumbnails.
-		Linked to Ignore, concealed in default.
+		Linked to Ignore, concealed by default.
 
 ThumbnailSelectMarker				*ThumbnailSelectMarker*
 		Markers for the thumbnail under the cursor.
-		Linked to Ignore, concealed in default.
+		Linked to Ignore, concealed by default.
 
 ThumbnailVisualMarker				*ThumbnailVisualMarker*
 		Markers for the visual-selected thumbnails, excluding the
 		thumbnail under the cursor.
-		Linked to Ignore, concealed in default.
+		Linked to Ignore, concealed by default.
 
 ThumbnailSelect					*ThumbnailSelect*
 		Syntax for the inner region for the thumbnail under the
@@ -376,8 +376,9 @@ Problem 1:					*thumbnail-problem-1*
 		If you are to install this plugin manually:
 
 			1. Put plugin/thumbnail.vim to $VIM/plugin/.
-			2. Put syntax/thumbnail.vim to $VIM/syntax/.
-			3. Put doc/thumbnail.txt to $VIM/doc/.
+			2. Put autoload/thumbnail.vim to $VIM/autoload/.
+			3. Put syntax/thumbnail.vim to $VIM/syntax/.
+			4. Put doc/thumbnail.txt to $VIM/doc/.
 
 		If you are to install this plugin using Vundle:
 
@@ -530,6 +531,10 @@ Problem 10:					*thumbnail-problem-10*
 
 ==============================================================================
 CHANGELOG					*thumbnail-changelog*
+
+0.4	2013-08-20, 08-23
+	- Check existence of &concealcursor.
+	- Move core codes to autoload/thumbnail.vim.
 
 0.3	2013-06-18, 07-06, 07-08, 07-16, 07-19, 07-21
 	- Filtering for [No Name] buffers
