@@ -1,9 +1,9 @@
 " =============================================================================
 " Filename: autoload/thumbnail.vim
-" Version: 0.4
+" Version: 0.5
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/06 10:57:04.
+" Last Change: 2014/01/26 23:00:21.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -11,15 +11,14 @@ set cpo&vim
 
 function! thumbnail#new(args)
   let [isnewbuffer, command, thumbnail_ft] = s:parse(a:args)
-  try | silent! execute command | catch | return | endtry
-  silent! noautocmd edit `='[thumbnail]'`
-  setl nobuflisted
+  try | silent execute command | catch | return | endtry
   let b:thumbnail_ft = thumbnail_ft
   let b = {}
   let b.input = ''
   let b.bufs = s:gather()
   if len(b.bufs) == 0
-    if isnewbuffer | silent bdelete! | endif
+    if isnewbuffer | bdelete! | endif
+    enew
     return
   endif
   call s:arrangement(b)
@@ -34,8 +33,10 @@ endfunction
 function! s:parse(args)
   let args = split(a:args, '\s\+')
   let isnewbuffer = bufname('%') != '' || &modified
+  let name = " `=s:buffername('thumbnail')`"
   let command = 'tabnew'
   let below = ''
+  let addname = 1
   let thumbnail_ft = { 'include': [], 'exclude': [], 'specify': [] }
   for arg in args
     if arg =~? '^-*horizontal$'
@@ -45,9 +46,10 @@ function! s:parse(args)
       let command = 'vnew'
       let isnewbuffer = 1
     elseif arg =~? '^-*here$'
-      let command = 'try | enew | catch | tabnew | endtry'
+      let command = 'try | edit' . name . ' | catch | tabnew' . name . ' | endtry'
+      let addname = 0
     elseif arg =~? '^-*here!$'
-      let command = 'enew!'
+      let command = 'edit!'
     elseif arg =~? '^-*newtab$'
       let command = 'tabnew'
       let isnewbuffer = 1
@@ -73,7 +75,9 @@ function! s:parse(args)
       let thumbnail_ft.exclude = []
     endif
   endfor
-  let command = 'if isnewbuffer | ' . below . command . ' | endif'
+  let cmd1 = below . command . (addname ? name : '')
+  let cmd2 = 'edit' . name
+  let command = 'if isnewbuffer | ' . cmd1 . ' | else | ' . cmd2 . '| endif'
   return [isnewbuffer, command, thumbnail_ft]
 endfunction
 
@@ -131,10 +135,23 @@ function! thumbnail#complete(arglead, cmdline, cursorpos)
   endtry
 endfunction
 
+function! s:buffername(name)
+  let buflist = []
+  for i in range(tabpagenr('$'))
+   call extend(buflist, tabpagebuflist(i + 1))
+  endfor
+  let matcher = 'bufname(v:val) =~# ("\\[" . a:name . "\\( \\d\\+\\)\\?\\]") && index(buflist, v:val) >= 0'
+  let substituter = 'substitute(bufname(v:val), ".*\\(\\d\\+\\).*", "\\1", "") + 0'
+  let bufs = map(filter(range(1, bufnr('$')), matcher), substituter)
+  let index = 0
+  while index(bufs, index) >= 0 | let index += 1 | endwhile
+  return '[' . a:name . (len(bufs) && index ? ' ' . index : '') . ']'
+endfunction
+
 function! s:au()
   augroup ThumbnailAutoUpdate
     autocmd!
-    autocmd BufEnter,CursorHold,CursorHoldI,BufWritePost,VimResized *
+    autocmd BufEnter,CursorHold,CursorHoldI,BufWritePost,VimResized,ColorScheme *
           \ call s:update_visible_thumbnail(expand('<abuf>'))
   augroup END
   augroup ThumbnailBuffer
@@ -142,7 +159,9 @@ function! s:au()
           \   if exists('b:thumbnail')
           \ |   call s:cursor()
           \ | endif
-    autocmd BufEnter <buffer>
+    autocmd ColorScheme <buffer>
+          \ silent! call s:set_filetype()
+    autocmd BufEnter,ColorScheme <buffer>
           \   try
           \ |   call s:revive()
           \ |   if exists('b:thumbnail') && !b:thumbnail.visual_mode
@@ -167,6 +186,7 @@ endfunction
 let s:white = repeat(' ', winwidth(0))
 
 function! s:gather()
+  setl nobuflisted
   let bufs = []
   for i in range(1, bufnr('$'))
     let f = (len(bufname(i)) == 0 && (!bufexists(i) || !bufloaded(i)
@@ -207,9 +227,11 @@ endfunction
 
 function! s:contents(b)
   for buf in a:b.bufs
-    let c = s:get(buf.bufnr, a:b.thumbnail_width, a:b.thumbnail_height)
+    let cnt = s:get(buf.bufnr, a:b.thumbnail_width, a:b.thumbnail_height)
+    let c = cnt.contents
     call extend(buf, {
-          \ 'contents': c,
+          \ 'name': cnt.name,
+          \ 'contents': cnt.contents,
           \ 'firstlinelength': len(c) ? len(c[0]) : a:b.thumbnail_width - 4
           \ })
   endfor
@@ -240,9 +262,10 @@ function! s:get(nr, width, height)
   endif
   call insert(lines, s:truncate_smart(name == '' ? '[No Name]' : name,
         \ a:width - 4, (a:width - 4) * 3 / 5, ' .. '))
-  return map(lines, 's:truncate(substitute(v:val,"\t","' .
+  return { 'contents': map(lines, 's:truncate(substitute(v:val,"\t","' .
         \ s:white[:getbufvar(a:nr, '&tabstop') - 1] .
-        \ '","g"),' . (a:width - 4) . ')')
+        \ '","g"),' . (a:width - 4) . ')'),
+        \ 'name': name }
 endfunction
 
 function! s:arrangement(b)
@@ -526,8 +549,8 @@ function! s:mapping()
         \ :<C-u>call <SID>drag_select(0)<CR>
   nnoremap <buffer><silent> <2-LeftMouse> <LeftMouse>
         \ :<C-u>call <SID>mouse_select()<CR>
-  map <buffer> <ScrollWheelUp> w
-  map <buffer> <ScrollWheelDown> b
+  map <buffer> <ScrollWheelUp> <Plug>(thumbnail_move_prev)
+  map <buffer> <ScrollWheelDown> <Plug>(thumbnail_move_next)
 
   let nop = 'cCoOpPrRsSuUz'
   for i in range(len(nop))
@@ -915,6 +938,7 @@ function! s:update(...)
   let line_white .= right_white
   let line_white_repeat = repeat([line_white], winheight(0))
   call extend(s, repeat([line_white], b.margin_top))
+  let b.status = ''
   for i in range(b.num_height)
     call extend(s, line_white_repeat[:b.offset_top - 1])
     for k in range(b.thumbnail_height)
@@ -930,6 +954,7 @@ function! s:update(...)
         if b.select_i == i && b.select_j == j
           let l = b.marker.left_select
           let r = b.marker.right_select
+          let b.status = b.bufs[m].name
         elseif b.visual_mode && index(b.visual_selects, m) != -1
           let l = b.marker.left_visual_select
           let r = b.marker.right_visual_select
@@ -954,7 +979,7 @@ function! s:update(...)
   setlocal nomodifiable buftype=nofile noswapfile readonly
         \ bufhidden=hide nobuflisted nofoldenable foldcolumn=0
         \ nolist wrap nowrap completefunc=ThumbnailComplete omnifunc=
-        \ nocursorcolumn nocursorline nonumber
+        \ nocursorcolumn nocursorline nonumber nomodeline
   if exists('&concealcursor')
     setlocal concealcursor=nvic
   endif
@@ -1010,6 +1035,7 @@ function! s:update_visible_thumbnail(bufnr)
     let newbuf = bufwinnr(str2nr(a:bufnr))
     let currentbuf = bufwinnr(bufnr('%'))
     execute winnr 'wincmd w'
+    silent! call s:set_filetype()
     call s:init(0)
     if winnr != newbuf && newbuf != -1
       call cursor(1, 1)
@@ -1020,6 +1046,11 @@ function! s:update_visible_thumbnail(bufnr)
     endif
   catch
   endtry
+endfunction
+
+function! s:set_filetype()
+  setlocal filetype=
+  setlocal filetype=thumbnail
 endfunction
 
 function! s:update_current_thumbnail()
@@ -1843,7 +1874,7 @@ function! s:update_filter()
     let b.bufs = white
     let input = substitute(input, '^ *', '', '')
     let padding = s:white[:
-          \ (winwidth(0) - max([s:wcswidth(input), winwidth(0) / 8])) 
+          \ (winwidth(0) - max([s:wcswidth(input), winwidth(0) / 8]))
           \ / 2 - 1]
     let input = padding . input
     let b.input = input
