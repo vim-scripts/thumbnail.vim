@@ -1,9 +1,8 @@
 " =============================================================================
 " Filename: syntax/thumbnail.vim
-" Version: 0.5
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/10/05 19:44:01.
+" Last Change: 2015/01/17 19:56:58.
 " =============================================================================
 
 if version < 700
@@ -12,6 +11,9 @@ elseif exists('b:current_syntax')
   finish
 endif
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 syntax match ThumbnailSelect '\[|.\{-}|\]' contains=ThumbnailSelectMarker
 syntax match ThumbnailVisual '\[\^.\{-}\^\]' contains=ThumbnailVisualMarker
 
@@ -19,9 +21,6 @@ if has('conceal') && (!exists('b:thumbnail_conceal') || b:thumbnail_conceal)
   syntax match ThumbnailSelectMarker '\[|\||\]' contained conceal
   syntax match ThumbnailVisualMarker '\[\^\|\^\]' contained conceal
   syntax match ThumbnailMarker '\[\\\|\\\]' conceal
-  if exists('&conceallevel')
-    setlocal conceallevel=3
-  endif
   let b:thumbnail_conceal = 1
 else
   syntax match ThumbnailSelectMarker '\[|\||\]' contained
@@ -136,13 +135,13 @@ else
   exec 'highlight ThumbnailSelect term=none gui=none guibg=' . s:gen_color(s:fg_color, s:bg_color, 1, 2)
 endif
 
-" highlight ThumbnailSelect term=none cterm=none ctermbg=236 gui=none guibg=#2c2c2c
-" highlight ThumbnailVisual term=none cterm=none ctermbg=234 gui=none guibg=#1c1c1c
 highlight default link ThumbnailSelectMarker Ignore
 highlight default link ThumbnailVisualMarker Ignore
 highlight default link ThumbnailMarker Ignore
 
-setlocal nocursorcolumn nocursorline
+unlet! s:gui_color s:term s:fg_color s:bg_color
 
 let b:current_syntax = 'thumbnail'
 
+let &cpo = s:save_cpo
+unlet s:save_cpo

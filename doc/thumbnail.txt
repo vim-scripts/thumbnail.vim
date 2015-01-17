@@ -1,10 +1,10 @@
 *thumbnail.txt*	A thumbnail buffer selector for Vim
 
-Version: 0.5
+Version: 0.6
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/thumbnail.vim
-Last Change: 2014/03/16 00:24:29.
+Last Change: 2015/01/18 00:02:31.
 
 CONTENTS					*thumbnail-contents*
 
@@ -385,9 +385,9 @@ Problem 1:					*thumbnail-problem-1*
 			1. Add the following configuration to your
 			.vimrc(_vimrc).
 >
-			Bundle 'itchyny/thumbnail.vim'
+			Plugin 'itchyny/thumbnail.vim'
 <
-			2. Install with `:BundleInstall`.
+			2. Install with `:PluginInstall`.
 
 		If you are to install this plugin using NeoBundle:
 
@@ -409,7 +409,7 @@ Problem 2:					*thumbnail-problem-2*
 
 		If you have installed this plugin using Vundle:
 
-			1. Execute `:BundleInstall!`. Or try git pull in the
+			1. Execute `:PluginInstall!`. Or try git pull in the
 			directory of this plugin.
 
 		If you have installed this plugin using NeoBundle:
@@ -426,9 +426,9 @@ Problem 3:					*thumbnail-problem-3*
 
 		If you have installed this plugin using Vundle:
 
-			1. Remove the :Bundle 'itchyny/thumbnail.vim'
+			1. Remove the :Plugin 'itchyny/thumbnail.vim'
 			configuration from your .vimrc(_vimrc).
-			2. Update with `:BundleClean`.
+			2. Update with `:PluginClean`.
 
 		If you have installed this plugin using NeoBundle:
 
@@ -532,7 +532,13 @@ Problem 10:					*thumbnail-problem-10*
 ==============================================================================
 CHANGELOG					*thumbnail-changelog*
 
-0.5	2013-10-06, 10-11, 10-21, 2014-01-26, 03-16
+0.6	2014-01-17, 01-18
+	- Save cpo and restore
+	- Improve g:loaded_thumbnail check
+	- Fix the LICENSE file
+	- Improve the syntax file
+
+0.5	2013-10-06, 10-11, 10-21, 2014-01-26, 03-16, 06-30, 07-24
 	- Improve the syntax
 	- Remove noautocmd
 	- Improve the buffer's name
@@ -540,6 +546,8 @@ CHANGELOG					*thumbnail-changelog*
 	- Update colors on ColorScheme event
 	- Fix for mouse wheel
 	- <Plug>(thumbnail)
+	- Fix leak in the syntax file
+	- Remove some unused variables
 
 0.4	2013-08-20, 08-23
 	- Check existence of &concealcursor.

@@ -1,9 +1,8 @@
 " =============================================================================
 " Filename: autoload/thumbnail.vim
-" Version: 0.5
 " Author: itchyny
 " License: MIT License
-" Last Change: 2014/01/26 23:00:21.
+" Last Change: 2015/01/17 19:57:04.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -353,6 +352,9 @@ function! s:mapping()
     return
   endif
 
+  let save_cpo = &cpo
+  set cpo&vim
+
   nnoremap <buffer><silent> <Plug>(thumbnail_move_left)
         \ :<C-u>call <SID>move_left()<CR>
   nnoremap <buffer><silent> <Plug>(thumbnail_move_right)
@@ -572,6 +574,8 @@ function! s:mapping()
   imap <buffer> <CR> <Plug>(thumbnail_select)
   imap <buffer> <ESC> <Plug>(thumbnail_exit_insert)
 
+  let &cpo = save_cpo
+
 endfunction
 
 let s:nmapping_order =
@@ -723,7 +727,6 @@ function! s:help(b, s)
   endfor
   let keylist = []
   for i in range(len(s:nmapping_order))
-    let title = s:nmapping_order[i][0]
     call add(keylist, [])
     for j in range(1, len(s:nmapping_order[i]) - 1)
       for [name, description] in s:nmapping_order[i][j]
@@ -980,6 +983,9 @@ function! s:update(...)
         \ bufhidden=hide nobuflisted nofoldenable foldcolumn=0
         \ nolist wrap nowrap completefunc=ThumbnailComplete omnifunc=
         \ nocursorcolumn nocursorline nonumber nomodeline
+  if exists('&conceallevel')
+    setlocal conceallevel=3
+  endif
   if exists('&concealcursor')
     setlocal concealcursor=nvic
   endif
@@ -1509,7 +1515,6 @@ function! s:open_buffer_tabs(nrs)
   let bufnr = bufnr('%')
   let c = 0
   let bufs = []
-  let tabcount = tabpagenr('$')
   for i in range(tabpagenr('$'))
     call extend(bufs, tabpagebuflist(i + 1))
   endfor
