@@ -2,7 +2,7 @@
 " Filename: syntax/thumbnail.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2015/01/17 19:56:58.
+" Last Change: 2015/03/10 00:34:09.
 " =============================================================================
 
 if version < 700
@@ -14,8 +14,8 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-syntax match ThumbnailSelect '\[|.\{-}|\]' contains=ThumbnailSelectMarker
-syntax match ThumbnailVisual '\[\^.\{-}\^\]' contains=ThumbnailVisualMarker
+syntax match ThumbnailSelect '\[|.\{-}|\]' contains=ThumbnailSelectMarker,ThumbnailTab
+syntax match ThumbnailVisual '\[\^.\{-}\^\]' contains=ThumbnailVisualMarker,ThumbnailTab
 
 if has('conceal') && (!exists('b:thumbnail_conceal') || b:thumbnail_conceal)
   syntax match ThumbnailSelectMarker '\[|\||\]' contained conceal
@@ -26,6 +26,11 @@ else
   syntax match ThumbnailSelectMarker '\[|\||\]' contained
   syntax match ThumbnailVisualMarker '\[\^\|\^\]' contained
   syntax match ThumbnailMarker '\[\\\|\\\]'
+endif
+if has('conceal')
+  syntax match ThumbnailTab '\t' conceal
+else
+  syntax match ThumbnailTab '\t'
 endif
 
 let s:gui_color = {
@@ -81,7 +86,7 @@ let s:gui_color = {
 let s:term = has('gui_running') ? 'gui' : 'cterm'
 let s:fg_color = synIDattr(synIDtrans(hlID('Normal')), 'fg', s:term)
 let s:bg_color = synIDattr(synIDtrans(hlID('Normal')), 'bg', s:term)
-if s:term == 'cterm'
+if s:term ==# 'cterm'
   function! s:rgb(nr)
     let x = a:nr * 1
     if x < 8
@@ -122,8 +127,8 @@ if s:term == 'cterm'
   exec 'highlight ThumbnailSelect term=none cterm=none ctermbg=' . s:gen_color(s:fg_color, s:bg_color, 1, 2)
 else
   function! s:gen_color(fg, bg, weightfg, weightbg)
-    let fg_rgb = map(matchlist(a:fg[0] == '#' ? a:fg : get(s:gui_color, a:fg, ''), '#\(..\)\(..\)\(..\)')[1:3], '("0x".v:val) + 0')
-    let bg_rgb = map(matchlist(a:bg[0] == '#' ? a:bg : get(s:gui_color, a:bg, ''), '#\(..\)\(..\)\(..\)')[1:3], '("0x".v:val) + 0')
+    let fg_rgb = map(matchlist(a:fg[0] ==# '#' ? a:fg : get(s:gui_color, a:fg, ''), '#\(..\)\(..\)\(..\)')[1:3], '("0x".v:val) + 0')
+    let bg_rgb = map(matchlist(a:bg[0] ==# '#' ? a:bg : get(s:gui_color, a:bg, ''), '#\(..\)\(..\)\(..\)')[1:3], '("0x".v:val) + 0')
     if len(fg_rgb) != 3 | let fg_rgb = &background ==# 'light' ? [0x12, 0x12, 0x12] : [0xe4, 0xe4, 0xe4] | endif
     if len(bg_rgb) != 3 | let bg_rgb = &background ==# 'light' ? [0xe4, 0xe4, 0xe4] : [0x12, 0x12, 0x12] | endif
     let color_rgb = map(map([0, 1, 2], '(fg_rgb[v:val] * a:weightfg + bg_rgb[v:val] * a:weightbg) / (a:weightfg + a:weightbg)'), 'v:val < 0 ? 0 : v:val > 0xff ? 0xff : v:val')
@@ -138,6 +143,7 @@ endif
 highlight default link ThumbnailSelectMarker Ignore
 highlight default link ThumbnailVisualMarker Ignore
 highlight default link ThumbnailMarker Ignore
+highlight default link ThumbnailTab Ignore
 
 unlet! s:gui_color s:term s:fg_color s:bg_color
 
